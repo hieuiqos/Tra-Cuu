@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tra Cứu Phạt Nguội Ô Tô, Xe Máy 2025</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="max-w-xl mx-auto p-6 bg-white rounded-2xl shadow-lg mt-10">
+    <h1 class="text-2xl font-bold mb-4 text-center text-pink-600">Tra Cứu Phạt Nguội Ô Tô, Xe Máy 2025</h1>
+
+    <form id="frmSubmit" onsubmit="return false">
+      <label class="block font-medium mb-2">Chọn loại phương tiện:</label>
+      <div class="flex space-x-4 mb-4">
+        <label class="inline-flex items-center">
+          <input type="radio" class="form-radio text-pink-600" name="loaixe" value="1" checked />
+          <span class="ml-2">Ô Tô</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input type="radio" class="form-radio text-pink-600" name="loaixe" value="2" />
+          <span class="ml-2">Xe Máy</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input type="radio" class="form-radio text-pink-600" name="loaixe" value="3" />
+          <span class="ml-2">Xe Máy Điện</span>
+        </label>
+      </div>
+
+      <div class="mb-4">
+        <label for="bienso" class="block mb-2 font-medium">Nhập biển số xe:</label>
+        <input id="bienso" name="bienso" placeholder="VD: 51F-777.77" class="w-full border border-pink-500 rounded-lg p-3 text-lg uppercase" />
+        <p class="text-sm text-gray-500 mt-1">Ví dụ: 19A32418, 51F-777.77</p>
+      </div>
+
+      <button type="button" id="submit" class="w-full bg-pink-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-pink-700">KIỂM TRA PHẠT NGUỘI</button>
+    </form>
+
+    <div id="alertok" class="text-green-600 text-center font-semibold mt-4"></div>
+
+    <div class="mt-6 text-sm text-gray-600 text-justify">
+      <p>Ứng dụng giúp tra cứu thông tin vi phạm giao thông (phạt nguội) dành cho ô tô, xe máy, xe điện.</p>
+      <ul class="list-disc pl-5 mt-2">
+        <li>Quét biển số xe tự động hoặc nhập thủ công</li>
+        <li>Xem chi tiết lỗi, địa điểm, thời gian vi phạm</li>
+        <li>Kiểm tra trước khi đăng kiểm xe</li>
+        <li>Liên kết dữ liệu từ Cục CSGT</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+  document.getElementById("submit").addEventListener("click", function () {
+    const bienso = document.getElementById("bienso").value.trim().toUpperCase();
+    const alertBox = document.getElementById("alertok");
+
+    if (!bienso) {
+      alertBox.innerText = "Vui lòng nhập biển số xe.";
+      return;
+    }
+
+    alertBox.innerText = "Đang kiểm tra, vui lòng chờ...";
+
+    fetch("http://localhost:5000/api/phat-nguoi", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ bienso: bienso })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.result) {
+          alertBox.innerText = "✅ " + data.result;
+        } else if (data.error) {
+          alertBox.innerText = "❌ " + data.error;
+        } else {
+          alertBox.innerText = "❌ Không có phản hồi.";
+        }
+      })
+      .catch(err => {
+        alertBox.innerText = "❌ Lỗi kết nối đến API.";
+        console.error(err);
+      });
+  });
+</script>
+
+</body>
+</html>
